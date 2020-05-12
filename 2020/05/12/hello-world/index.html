@@ -14,10 +14,12 @@
 <meta property="og:site_name" content="round_0">
 <meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-05-12T09:49:33.648Z">
-<meta property="article:modified_time" content="2020-05-12T11:11:11.991Z">
+<meta property="article:published_time" content="2020-05-12T09:53:36.000Z">
+<meta property="article:modified_time" content="2020-05-12T11:18:17.833Z">
 <meta property="article:author" content="Jinke Gong">
-<meta property="article:tag" content="foo1, bar2, 123">
+<meta property="article:tag" content="foo">
+<meta property="article:tag" content="bar">
+<meta property="article:tag" content="123">
 <meta name="twitter:card" content="summary">
   
   
@@ -70,9 +72,13 @@
         <section id="main"><article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/05/12/hello-world/" class="article-date">
-  <time datetime="2020-05-12T09:49:33.648Z" itemprop="datePublished">2020-05-12</time>
+  <time datetime="2020-05-12T09:53:36.000Z" itemprop="datePublished">2020-05-12</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/C1/">C1</a>►<a class="article-category-link" href="/categories/C1/C2/">C2</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -101,11 +107,9 @@
 <p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 
-<h3 id="C-代码"><a href="#C-代码" class="headerlink" title="C++代码"></a>C++代码</h3><pre><code>#include&lt;stdio.h&gt;
-int main(){
-    printf(&quot;Hello world\n&quot;);
-    return 0;
-}</code></pre><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+<h3 id="C-代码"><a href="#C-代码" class="headerlink" title="C++代码"></a>C++代码</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Hello world\n"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
 
       
     </div>
@@ -113,7 +117,7 @@ int main(){
       <a data-url="https://github.com/round00/round00.github.io.git/2020/05/12/hello-world/" data-id="cka3thxa3000050vqbpmv43qy" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/foo1-bar2-123/" rel="tag">foo1, bar2, 123</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/123/" rel="tag">123</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bar/" rel="tag">bar</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/foo/" rel="tag">foo</a></li></ul>
 
     </footer>
   </div>
@@ -121,15 +125,11 @@ int main(){
     
 <nav id="article-nav">
   
-    <a href="/2020/05/12/My-First-Post/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          My First Post
-        
-      </div>
-    </a>
   
+    <a href="/2020/05/12/My-First-Post/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">My First Post</div>
+    </a>
   
 </nav>
 
@@ -141,13 +141,20 @@ int main(){
           <aside id="sidebar">
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/C1/">C1</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/C1/C2/">C2</a></li></ul></li></ul>
+    </div>
+  </div>
+
 
   
     
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/foo1-bar2-123/" rel="tag">foo1, bar2, 123</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/123/" rel="tag">123</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bar/" rel="tag">bar</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/foo/" rel="tag">foo</a></li></ul>
     </div>
   </div>
 
@@ -157,7 +164,7 @@ int main(){
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/foo1-bar2-123/" style="font-size: 10px;">foo1, bar2, 123</a>
+      <a href="/tags/123/" style="font-size: 10px;">123</a> <a href="/tags/bar/" style="font-size: 10px;">bar</a> <a href="/tags/foo/" style="font-size: 10px;">foo</a>
     </div>
   </div>
 
@@ -179,11 +186,11 @@ int main(){
       <ul>
         
           <li>
-            <a href="/2020/05/12/My-First-Post/">My First Post</a>
+            <a href="/2020/05/12/hello-world/">Hello World</a>
           </li>
         
           <li>
-            <a href="/2020/05/12/hello-world/">Hello World</a>
+            <a href="/2020/05/12/My-First-Post/">My First Post</a>
           </li>
         
       </ul>
