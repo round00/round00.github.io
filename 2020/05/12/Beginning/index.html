@@ -166,21 +166,24 @@
 <div class="comments">
     <h3 class="title is-4">Comments</h3>
     
-<div id="comment-container"></div>
-<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<div id="valine-thread"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
 <script>
-	var gitment = new Gitment({
-		id: '2020/05/12/Beginning/',
-		owner: 'round00',
-		repo: 'round00.github.io',
-		oauth: {
-			client_id: '24611a6beefd85e05bf0',
-			client_secret: '48f094d2d437eaad07086d5505ac47ed6facf7da',
-		},
-	})
-	gitment.render('comment-container')
+    new Valine({
+        el: '#valine-thread',
+        appId: 'FgIQVv5B2kd1MwbTL9glqpQf-gzGzoHsz',
+        appKey: 'r47AH79b8Oiqd2FTHu7lWE1A',
+        notify: false,
+        verify: false,
+        avatar: '',
+        placeholder: 'Welcome to leave a comment',
+        meta: ['nick', 'mail'],
+        visitor: true,
+        lang: ''
+    })
 </script>
+
 
 </div>
 
