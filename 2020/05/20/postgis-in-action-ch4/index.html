@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+<head>
+    <meta charset="utf-8">
+<title>PostGIS实战-第四章 几何函数 - round_0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.css">
+
+
+
+
+<meta name="description" content="Beginner">
+
+
+
+
+
+    <meta name="description" content="PostGIS&amp;#x5B9E;&amp;#x6218;&amp;#x4E00;&amp;#x7CFB;&amp;#x5217;&amp;#x7684;&amp;#x6587;&amp;#x7AE0;&amp;#x6682;&amp;#x65F6;&amp;#x4E0D;&amp;#x5199;&amp;#x4E86;&amp;#xFF0C;&amp;#x539F;&amp;#x56E0;&amp;#x770B;&amp;#x4E0B;&amp;#x6587;&amp;#x7AE0;&amp;#x672B;&amp;#x5C3E;&amp;#x3002;&amp;#x4E3B;&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PostGIS实战-第四章 几何函数">
+<meta property="og:url" content="https://round00.github.io/2020/05/20/postgis-in-action-ch4/">
+<meta property="og:site_name" content="round_0">
+<meta property="og:description" content="PostGIS&amp;#x5B9E;&amp;#x6218;&amp;#x4E00;&amp;#x7CFB;&amp;#x5217;&amp;#x7684;&amp;#x6587;&amp;#x7AE0;&amp;#x6682;&amp;#x65F6;&amp;#x4E0D;&amp;#x5199;&amp;#x4E86;&amp;#xFF0C;&amp;#x539F;&amp;#x56E0;&amp;#x770B;&amp;#x4E0B;&amp;#x6587;&amp;#x7AE0;&amp;#x672B;&amp;#x5C3E;&amp;#x3002;&amp;#x4E3B;&amp;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-05-20T02:07:51.000Z">
+<meta property="article:modified_time" content="2020-07-01T02:02:20.998Z">
+<meta property="article:author" content="Jinke Gong">
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+<link rel="icon" href="/images/favicon.png">
+
+
+<link rel="stylesheet" href="//fonts.loli.net/css?family=Ovo|Source+Code+Pro">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/css/lightgallery.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/css/justifiedGallery.min.css">
+
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+<script defer src="//use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    
+<nav class="navbar is-transparent is-fixed-top navbar-main" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <div class="navbar-brand">
+            <a class="navbar-item navbar-logo" href="/">
+                
+                    
+                    <img src="/images/logo.png" alt="" height="32">
+                    
+                
+            </a>
+            <div class="navbar-burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        
+        <div class="navbar-menu navbar-start">
+            
+            <a class="navbar-item "
+               href="/archives">Archives</a>
+            
+            <a class="navbar-item "
+               href="/categories/">Categories</a>
+            
+        </div>
+        
+        <div class="navbar-menu navbar-end">
+            
+            <a class="navbar-item search" title="Search" href="javascript:;">
+                <i class="fas fa-search"></i>
+            </a>
+            
+            
+            <div class="navbar-item is-hoverable has-dropdown is-hidden-mobile is-hidden-tablet-only toc">
+                <a class="navbar-item" title="Table of Contents">
+                    <i class="fa fa-list"></i>
+                </a>
+                <div class="navbar-dropdown is-right">
+                    
+                    
+                    
+                    
+                    <a class="navbar-item" href="#一、构造函数">1.1&nbsp;&nbsp;一、构造函数</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#1、从WKT或WKB格式创建">1.1.1&nbsp;&nbsp;1、从WKT或WKB格式创建</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#2、PostgreSQL-PostGIS中的自动转换">1.1.2&nbsp;&nbsp;2、PostgreSQL/PostGIS中的自动转换</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#二、输出函数">1.2&nbsp;&nbsp;二、输出函数</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#1、WKT和WKB">1.2.1&nbsp;&nbsp;1、WKT和WKB</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#2、KML">1.2.2&nbsp;&nbsp;2、KML</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#3、GML">1.2.3&nbsp;&nbsp;3、GML</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#4、GeoJSON">1.2.4&nbsp;&nbsp;4、GeoJSON</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#5、SVG">1.2.5&nbsp;&nbsp;5、SVG</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#6、Geohash">1.2.6&nbsp;&nbsp;6、Geohash</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#7、例子">1.2.7&nbsp;&nbsp;7、例子</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#三、读取-设置函数">1.3&nbsp;&nbsp;三、读取/设置函数</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#1、空间参考系">1.3.1&nbsp;&nbsp;1、空间参考系</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#2、转换到另一个空间参考系">1.3.2&nbsp;&nbsp;2、转换到另一个空间参考系</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#3、几何类型">1.3.3&nbsp;&nbsp;3、几何类型</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#4、坐标和几何维度">1.3.4&nbsp;&nbsp;4、坐标和几何维度</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#5、几何图形有效性">1.3.5&nbsp;&nbsp;5、几何图形有效性</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#6、定义几何对象的点的个数">1.3.6&nbsp;&nbsp;6、定义几何对象的点的个数</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#四、度量函数">1.4&nbsp;&nbsp;四、度量函数</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#1、几何类型的平面测量">1.4.1&nbsp;&nbsp;1、几何类型的平面测量</a>
+                    
+                    
+                    
+                    <a class="navbar-item" href="#2、几何类型的地理测量">1.4.2&nbsp;&nbsp;2、几何类型的地理测量</a>
+                    
+                    
+                    <hr class="navbar-divider">
+                    
+                    
+                    <a class="navbar-item" href="#这本书不能再看了，这是PostGIS实战第一版，PostGIS-版本是1-X，而我们现在要用的是PostGIS-3-X。改动实在是太多了，当前这本书上的内容很多现在都用不了了。PostGIS实战也出到第三版了，如果以后能拿到第三版的书，再看吧。">2&nbsp;&nbsp;<b>这本书不能再看了，这是PostGIS实战第一版，PostGIS 版本是1.X，而我们现在要用的是PostGIS 3.X。改动实在是太多了，当前这本书上的内容很多现在都用不了了。PostGIS实战也出到第三版了，如果以后能拿到第三版的书，再看吧。</b></a>
+                    
+                </div>
+            </div>
+            
+            
+            <a class="navbar-item" title="GitHub" href="https://github.com/round00" target="_blank" rel="noopener">
+                
+                <i class="fab fa-github"></i>
+                
+            </a>
+               
+            
+        </div>
+    </div>
+</nav>
+
+    <section class="section">
+    <div class="container">
+    <article class="article content gallery" itemscope itemprop="blogPost">
+    <h1 class="article-title is-size-3 is-size-4-mobile" itemprop="name">
+        
+            PostGIS实战-第四章 几何函数
+        
+    </h1>
+    <div class="article-meta columns is-variable is-1 is-multiline is-mobile is-size-7-mobile">
+        <span class="column is-narrow">
+            <time datetime="2020-05-20T02:07:51.000Z" itemprop="datePublished">May 20 2020</time>
+        </span>
+        
+        <span class="column is-narrow article-category">
+            <i class="far fa-folder"></i>
+            <a class="article-category-link" href="/categories/PostGIS/">PostGIS</a><span>></span><a class="article-category-link" href="/categories/PostGIS/PostGIS-In-Action/">PostGIS In Action</a>
+        </span>
+        
+        
+        <span class="column is-narrow">
+            
+            
+            25 minutes read (About 3682 words)
+        </span>
+        
+    </div>
+    <div class="article-entry is-size-6-mobile" itemprop="articleBody">
+    
+        <html><head></head><body><p><strong>PostGIS&#x5B9E;&#x6218;&#x4E00;&#x7CFB;&#x5217;&#x7684;&#x6587;&#x7AE0;&#x6682;&#x65F6;&#x4E0D;&#x5199;&#x4E86;&#xFF0C;&#x539F;&#x56E0;&#x770B;&#x4E0B;&#x6587;&#x7AE0;&#x672B;&#x5C3E;&#x3002;&#x4E3B;&#x8981;&#x5C31;&#x662F;&#x7248;&#x672C;&#x53D8;&#x52A8;&#x592A;&#x5927;&#x4E86;&#x3002;</strong></p>
+<p>&#x524D;&#x9762;&#x7684;&#x7AE0;&#x8282;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x89C1;&#x5230;&#x4E86;PostGIS&#x63D0;&#x4F9B;&#x7684;&#x5404;&#x79CD;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x4EE5;&#x53CA;&#x5982;&#x4F55;&#x521B;&#x5EFA;&#x5B83;&#x4EEC;&#x3002;&#x5728;&#x672C;&#x7AE0;&#x4EE5;&#x53CA;&#x540E;&#x9762;&#x7684;&#x7AE0;&#x8282;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x4F1A;&#x4ECB;&#x7ECD;&#x4E00;&#x7CFB;&#x5217;&#x6838;&#x5FC3;&#x7684;&#x51FD;&#x6570;&#x6765;&#x64CD;&#x4F5C;&#x8FD9;&#x4E9B;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x3002;&#x672C;&#x7AE0;&#x4F1A;&#x4E13;&#x6CE8;&#x4E8E;&#x5904;&#x7406;&#x5355;&#x4E2A;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x51FD;&#x6570;&#x3002;</p>
+<a id="more"></a>
+
+<p>PostGIS&#x63D0;&#x4F9B;&#x4E86;300+&#x7684;&#x51FD;&#x6570;&#x548C;&#x64CD;&#x4F5C;&#x7B26;&#x3002;&#x4E3A;&#x4E86;&#x80FD;&#x65B9;&#x4FBF;&#x7684;&#x6982;&#x89C8;&#x6240;&#x6709;&#x51FD;&#x6570;&#xFF0C;&#x6211;&#x4EEC;&#x5F00;&#x53D1;&#x4E86;&#x4E00;&#x79CD;&#x6839;&#x636E;&#x4F7F;&#x7528;&#x65B9;&#x6CD5;&#x6765;&#x533A;&#x522B;&#x7684;&#x5206;&#x7C7B;&#x6CD5;&#x3002;&#x8FD9;&#x5E76;&#x4E0D;&#x662F;&#x5F88;&#x4E25;&#x8C28;&#x7684;&#x5206;&#x7C7B;&#x3002;&#x6309;&#x7167;&#x5B8C;&#x6210;&#x4EFB;&#x52A1;&#x7684;&#x7C7B;&#x578B;&#x6765;&#x5C06;&#x51FD;&#x6570;&#x5206;&#x7C7B;&#xFF0C;&#x662F;&#x6700;&#x65B9;&#x4FBF;&#x6709;&#x6548;&#x7684;&#x529E;&#x6CD5;&#x4E86;&#x3002;&#x4E0B;&#x9762;&#x6211;&#x4EEC;&#x6D4F;&#x89C8;&#x4E00;&#x4E0B;&#x5206;&#x7C7B;&#x76EE;&#x5F55;&#xFF1A;</p>
+<ul>
+<li><p>&#x6784;&#x9020;&#x51FD;&#x6570;&#xFF1A;&#x4ECE;WKT&#x6216;&#x8005;WKB&#x6765;&#x521B;&#x5EFA;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;</p>
+</li>
+<li><p>&#x8F93;&#x51FA;&#x51FD;&#x6570;&#xFF1A;&#x5C06;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x4EE5;&#x4E00;&#x4E9B;&#x77E5;&#x540D;&#x7684;&#x6807;&#x51C6;&#x683C;&#x5F0F;&#xFF08;&#x4F8B;&#x5982;&#xFF1A;WKT&#x3001;WKB&#x3001;GML&#x3001;SVG&#x3001;KML&#x3001;GeoJson&#x7B49;&#xFF09;&#x8F93;&#x51FA;</p>
+</li>
+<li><p>&#x8BFB;&#x53D6;/&#x8BBE;&#x7F6E;&#x51FD;&#x6570;&#xFF1A;&#x7528;&#x4E8E;&#x64CD;&#x4F5C;&#x5355;&#x72EC;&#x7684;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#xFF0C;&#x8FD4;&#x56DE;/&#x8BBE;&#x7F6E;&#x5B83;&#x7684;&#x5C5E;&#x6027;</p>
+</li>
+<li><p>&#x5206;&#x89E3;&#x51FD;&#x6570;&#xFF1A;&#x4ECE;&#x8F93;&#x5165;&#x7684;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x4E2D;&#x5BFC;&#x51FA;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x3002;</p>
+</li>
+<li><p>&#x7EC4;&#x5408;&#x51FD;&#x6570;&#xFF1A;&#x628A;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x62FC;&#x63A5;&#x3001;&#x7EC4;&#x5408;&#x5230;&#x4E00;&#x8D77;</p>
+</li>
+<li><p>&#x5EA6;&#x91CF;&#x51FD;&#x6570;&#xFF1A;&#x8FD4;&#x56DE;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x67D0;&#x4E2A;&#x5EA6;&#x91CF;&#x6807;&#x91CF;&#x503C;</p>
+</li>
+<li><p>&#x7B80;&#x5316;&#x51FD;&#x6570;&#xFF1A;&#x6709;&#x65F6;&#x5019;&#x5E76;&#x4E0D;&#x9700;&#x8981;&#x4E00;&#x4E2A;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x5B8C;&#x5168;&#x4F53;&#xFF0C;&#x8FD9;&#x4E9B;&#x51FD;&#x6570;&#x901A;&#x8FC7;&#x5220;&#x9664;&#x70B9;&#x3001;&#x7EBF;&#x4E32;&#x6216;&#x8005;&#x8FD1;&#x4F3C;&#x820D;&#x5165;&#x5750;&#x6807;&#x6765;&#x7B80;&#x5316;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x3002;&#x4EA7;&#x751F;&#x7684;&#x7ED3;&#x679C;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x4F1A;&#x548C;&#x539F;&#x6765;&#x7684;&#x770B;&#x8D77;&#x6765;&#x57FA;&#x672C;&#x4E00;&#x6837;&#x3002;&#x53EA;&#x662F;&#x7CBE;&#x5EA6;&#x4F4E;&#x4E86;&#x3002;</p>
+</li>
+</ul>
+<p>&#x6309;&#x7167;&#x672C;&#x4E66;&#x7684;&#x4F7F;&#x547D;&#xFF1A;&#x5C55;&#x793A;&#x5982;&#x4F55;&#x4F7F;&#x7528;PostGIS&#xFF0C;&#x800C;&#x4E0D;&#x662F;&#x4F5C;&#x4E3A;&#x4E00;&#x4E2A;&#x67E5;&#x9605;&#x7684;&#x6587;&#x6863;&#xFF0C;&#x8FD9;&#x91CC;&#x53EA;&#x4F1A;&#x4ECB;&#x7ECD;&#x4E00;&#x4E9B;&#x5E38;&#x7528;&#x7684;&#x51FD;&#x6570;&#xFF0C;&#x5982;&#x679C;&#x9700;&#x8981;&#x5B8C;&#x6574;&#x7684;&#x51FD;&#x6570;&#x5217;&#x8868;&#xFF0C;&#x8981;&#x53BB;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x627E;&#x3002;</p>
+<p><strong>&#x51FD;&#x6570;&#x7684;&#x524D;&#x7F00;ST&#x662F;&#x4EC0;&#x4E48;&#x610F;&#x601D;&#xFF1F;</strong></p>
+<p>&#x53EF;&#x4EE5;&#x6CE8;&#x610F;&#x5230;&#xFF0C;&#x57FA;&#x672C;&#x4E0A;&#x6240;&#x6709;&#x51FD;&#x6570;&#x90FD;&#x662F;&#x4EE5;ST&#x5F00;&#x5934;&#x7684;&#x3002;S&#x8868;&#x793A;<strong>spatial</strong>&#xFF08;&#x7A7A;&#x95F4;&#x7684;&#xFF09;&#xFF0C;T&#x8868;&#x793A;<strong>temporal</strong>&#xFF08;&#x65F6;&#x95F4;&#x7684;&#xFF09;&#x3002;ST&#x524D;&#x7F00;&#x5728;&#x5176;&#x4ED6;&#x7A7A;&#x95F4;&#x6570;&#x636E;&#x5E93;&#x4E2D;&#x5E38;&#x5E38;&#x88AB;&#x7701;&#x7565;&#x6389;&#xFF0C;&#x4F46;&#x662F;&#x5728;PostGIS&#x4E2D;&#x7559;&#x4E0B;&#x6765;&#x4E86;&#x3002;</p>
+<h2 id="&#x4E00;&#x3001;&#x6784;&#x9020;&#x51FD;&#x6570;"><a href="#&#x4E00;&#x3001;&#x6784;&#x9020;&#x51FD;&#x6570;" class="headerlink" title="&#x4E00;&#x3001;&#x6784;&#x9020;&#x51FD;&#x6570;"></a>&#x4E00;&#x3001;&#x6784;&#x9020;&#x51FD;&#x6570;</h2><p>&#x6784;&#x9020;&#x51FD;&#x6570;&#x7528;&#x4E8E;&#x521B;&#x5EFA;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#xFF0C;&#x6709;&#x4E24;&#x79CD;&#x5E38;&#x7528;&#x7684;&#x521B;&#x5EFA;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x65B9;&#x5F0F;&#x3002;&#x7B2C;&#x4E00;&#x79CD;&#x662F;&#x4F7F;&#x7528;&#x53EF;&#x4EE5;&#x63A5;&#x53D7;&#x7684;&#x539F;&#x59CB;&#x6570;&#x636E;&#x683C;&#x5F0F;&#x6765;&#x521B;&#x5EFA;&#xFF0C;&#x7B2C;&#x4E8C;&#x79CD;&#x662F;&#x4ECE;&#x5176;&#x4ED6;&#x5DF2;&#x7ECF;&#x5B58;&#x5728;&#x7684;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x901A;&#x8FC7;&#x5206;&#x89E3;&#x3001;&#x62FC;&#x63A5;&#x3001;&#x5207;&#x7247;&#x3001;&#x7D22;&#x5F15;&#x6765;&#x751F;&#x6210;&#x65B0;&#x7684;&#x3002;</p>
+<h3 id="1&#x3001;&#x4ECE;WKT&#x6216;WKB&#x683C;&#x5F0F;&#x521B;&#x5EFA;"><a href="#1&#x3001;&#x4ECE;WKT&#x6216;WKB&#x683C;&#x5F0F;&#x521B;&#x5EFA;" class="headerlink" title="1&#x3001;&#x4ECE;WKT&#x6216;WKB&#x683C;&#x5F0F;&#x521B;&#x5EFA;"></a>1&#x3001;&#x4ECE;WKT&#x6216;WKB&#x683C;&#x5F0F;&#x521B;&#x5EFA;</h3><p>&#x8FD9;&#x4E9B;&#x4E0D;&#x53EF;&#x6216;&#x7F3A;&#x7684;&#x51FD;&#x6570;&#x5728;&#x4F60;&#x8F93;&#x5165;&#x5404;&#x79CD;&#x6587;&#x672C;&#x6216;&#x8005;&#x4E8C;&#x8FDB;&#x5236;&#x6570;&#x636E;&#x65F6;&#xFF0C;&#x4F1A;&#x8F93;&#x51FA;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x3002;&#x8FD9;&#x4E9B;&#x683C;&#x5F0F;&#x53EF;&#x4EE5;&#x5728;&#x5176;&#x4ED6;&#x684C;&#x9762;&#x5DE5;&#x5177;&#x4E2D;&#x80FD;&#x65B9;&#x4FBF;&#x7684;&#x770B;&#x5230;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x3002;</p>
+<p><strong>&#x6CE8;</strong>&#xFF1A;WKT&#xFF08;well-known text&#xFF09;&#xFF0C;WKB&#xFF08;well-known binary&#xFF09;</p>
+<h4 id="1-ST-GeomFromText"><a href="#1-ST-GeomFromText" class="headerlink" title="1. ST_GeomFromText"></a>1. ST_GeomFromText</h4><p>&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x65F6;<strong>SQL/MM&#x6807;&#x51C6;</strong>&#x51FD;&#x6570;&#xFF0C;&#x5728;&#x5176;&#x4ED6;&#x517C;&#x5BB9;SQL/MM&#x6807;&#x51C6;&#x7684;&#x7A7A;&#x95F4;&#x6570;&#x636E;&#x5E93;&#x4E2D;&#xFF0C;&#x4E5F;&#x53EF;&#x4EE5;&#x627E;&#x5230;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x3002;&#x6839;&#x636E;SQL/MM&#x89C4;&#x5B9A;&#xFF0C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x53EA;&#x652F;&#x6301;2D&#x3002;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">INTO</span> table1 </span><br><span class="line"><span class="hljs-keyword">FROM</span>( <span class="hljs-keyword">VALUES</span> </span><br><span class="line">        ( ST_GeomFromText ( <span class="hljs-string">&apos;POINT(-100 28)&apos;</span>, <span class="hljs-number">4326</span> ) ), </span><br><span class="line">        ( ST_GeomFromText ( <span class="hljs-string">&apos;LINESTRING(-80 28, -90 29)&apos;</span>, <span class="hljs-number">4326</span> ) ), </span><br><span class="line">        ( ST_GeomFromText ( <span class="hljs-string">&apos;POLYGON((10 28, 9 29, 7 30, 10 28))&apos;</span> ) ) </span><br><span class="line">) <span class="hljs-keyword">AS</span> foo ( geom );</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h4 id="2-ST-GeomFromEWKT"><a href="#2-ST-GeomFromEWKT" class="headerlink" title="2. ST_GeomFromEWKT"></a>2. ST_GeomFromEWKT</h4><p>&#x8FD9;&#x662F;&#x53E6;&#x4E00;&#x4E2A;&#x7C7B;&#x4F3C;&#x7684;&#x51FD;&#x6570;&#xFF0C;&#x53EA;&#x5728;PostGIS&#x4E2D;&#x6709;&#xFF0C;&#x56E0;&#x4E3A;EWKT&#xFF08;extended WKT&#xFF09;&#x662F;PostGIS&#x72EC;&#x6709;&#x7684;&#x683C;&#x5F0F;&#xFF0C;&#x7528;&#x4E8E;&#x5F25;&#x8865;WKT&#x7684;&#x4E0D;&#x8DB3;&#x4E4B;&#x5904;&#x3002;<strong>EWKT&#x5C06;SRID&#x76F4;&#x63A5;&#x7F16;&#x7801;&#x5230;WKT&#x4E2D;&#xFF0C;&#x5E76;&#x4E14;&#x652F;&#x6301;3D&#x3001;4D</strong>&#x3002;EWKT&#x663E;&#x5F0F;&#x7684;&#x524D;&#x7F6E;SRID&#x5230;WKT&#x4E2D;&#x3002;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> *</span><br><span class="line"><span class="hljs-keyword">FROM</span> ( <span class="hljs-keyword">VALUES</span></span><br><span class="line">    (ST_GeomFromEWKT(<span class="hljs-string">&apos;SRID=4326;POINT(-100 28)&apos;</span>)),</span><br><span class="line">    (ST_GeomFromEWKT(<span class="hljs-string">&apos;SRID=4326;LINESTRING(-80 28,-90 29)&apos;</span>)),</span><br><span class="line">    (ST_GeomFromEWKT(<span class="hljs-string">&apos;SRID=4326;POLYGON((10 28, 9 29, 7 30, 10 28))&apos;</span> ) ) </span><br><span class="line">) <span class="hljs-keyword">As</span> foo(geom);</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h4 id="3-ST-GeomFromWKB-&#x548C;-ST-GeomFromEWKB"><a href="#3-ST-GeomFromWKB-&#x548C;-ST-GeomFromEWKB" class="headerlink" title="3. ST_GeomFromWKB &#x548C; ST_GeomFromEWKB"></a>3. ST_GeomFromWKB &#x548C; ST_GeomFromEWKB</h4><p>&#x540C;&#x4E0A;&#xFF0C;<code>ST_GeomFromWKT</code>&#x662F;SQL/MM&#x6807;&#x51C6;&#x7684;&#x51FD;&#x6570;&#x3002;<code>ST_GeomFromEWKT</code>&#x662F;PostGIS&#x6269;&#x5C55;&#x51FA;&#x7684;&#x51FD;&#x6570;&#xFF0C;&#x7528;&#x4E8E;&#x7F16;&#x7801;SRID&#xFF0C;&#x652F;&#x6301;3D&#x3001;4D&#x3002;&#x8FD9;&#x4E24;&#x4E2A;&#x51FD;&#x6570;&#x63A5;&#x6536;&#x5B57;&#x8282;&#x6D41;&#x6570;&#x7EC4;&#xFF0C;&#x800C;&#x4E0D;&#x662F;&#x5B57;&#x7B26;&#x4E32;&#x3002;&#x5B57;&#x8282;&#x6D41;&#x7684;&#x4E00;&#x4E2A;&#x4F18;&#x70B9;&#x662F;&#x7CBE;&#x786E;&#x3002;&#x6BD4;&#x5982;&#x7528;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x8BDD;&#xFF0C;&#x5728;&#x5C0F;&#x6570;&#x70B9;15&#x4F4D;&#x4E4B;&#x540E;&#x5C31;&#x4F1A;&#x88AB;&#x622A;&#x65AD;&#x3002;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> ST_GeomFromWKB(E<span class="hljs-string">&apos;\\001\\001\\000\\000\\000\\321\\256B\\312O\\</span></span><br><span class="line"><span class="hljs-string">&#xA0;&#xA0;&#xA0;&#xA0;304Q\\300\\347\\030\\220\\275\\336%E@&apos;</span>,<span class="hljs-number">4326</span>);</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x4E0A;&#x9762;&#x7684;&#x8FD9;&#x4E2A;&#x8BED;&#x53E5;&#xFF0C;&#x4E5F;&#x53EF;&#x4EE5;&#x8FD9;&#x6837;&#x6765;&#x5F97;&#x5230;&#x76F8;&#x540C;&#x7684;&#x7ED3;&#x679C;&#xFF1A;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> <span class="hljs-string">&apos;0101000020E61000008048BF7D1D2059C017B7D100DEB23C40&apos;</span>::geometry;</span><br><span class="line"><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">CAST</span>(<span class="hljs-string">&apos;0101000020E61000008048BF7D1D2059C017B7D100DEB23C40&apos;</span> <span class="hljs-keyword">As</span> geometry);</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x4E3A;&#x4E86;&#x517C;&#x5BB9;OGC-MM&#xFF0C;PostGIS&#x63D0;&#x4F9B;&#x4E86;&#x5176;&#x4ED6;&#x51FD;&#x6570;&#xFF0C;&#x4F8B;&#x5982;&#xFF1A;ST_PointFromText&#xFF0C;ST_PolyFromText&#xFF0C; ST_GeometryFromText&#x7B49;&#x7B49;&#x3002;&#x4F46;&#x662F;&#x5E76;&#x4E0D;&#x5EFA;&#x8BAE;&#x4F7F;&#x7528;&#x8FD9;&#x4E9B;&#xFF0C;&#x800C;&#x662F;&#x4F7F;&#x7528;<code>ST_GeomFromText</code>, <code>ST_Point</code>, <code>ST_MakePoint</code>, <code>ST_GeomFromWKB</code>&#x8FD9;&#x4E9B;&#x51FD;&#x6570;&#x3002;&#x56E0;&#x4E3A;&#x524D;&#x9762;&#x90A3;&#x4E9B;&#x51FD;&#x6570;&#x5E95;&#x5C42;&#x8C03;&#x7528;&#x7684;&#x5C31;&#x662F;&#x540E;&#x9762;&#x7684;&#x8FD9;&#x4E9B;&#x51FD;&#x6570;&#xFF0C;&#x53EA;&#x662F;&#x7B80;&#x5355;&#x7684;&#x505A;&#x4E86;&#x5C42;&#x5C01;&#x88C5;&#x3002;&#x4F1A;&#x5E26;&#x6765;&#x4E00;&#x4E9B;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5F00;&#x9500;&#x3002;</p>
+<h3 id="2&#x3001;PostgreSQL-PostGIS&#x4E2D;&#x7684;&#x81EA;&#x52A8;&#x8F6C;&#x6362;"><a href="#2&#x3001;PostgreSQL-PostGIS&#x4E2D;&#x7684;&#x81EA;&#x52A8;&#x8F6C;&#x6362;" class="headerlink" title="2&#x3001;PostgreSQL/PostGIS&#x4E2D;&#x7684;&#x81EA;&#x52A8;&#x8F6C;&#x6362;"></a>2&#x3001;PostgreSQL/PostGIS&#x4E2D;&#x7684;&#x81EA;&#x52A8;&#x8F6C;&#x6362;</h3><p>PostGIS&#x5185;&#x7F6E;&#x4E86;&#x81EA;&#x52A8;&#x8F6C;&#x6362;&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x80FD;&#x591F;&#x5C06;&#x8F93;&#x5165;&#x53C2;&#x6570;&#x662F;&#x6587;&#x672C;&#x5F62;&#x5F0F;&#x65F6;&#xFF0C;&#x8F6C;&#x6362;&#x4F4D;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x3002;&#x4F8B;&#x5982;&#xFF1A;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> ST_AsText(ST_Centroid(<span class="hljs-string">&apos;LINESTRING(1 2,3 4)&apos;</span>));</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x80FD;&#x591F;&#x5F97;&#x5230;&#x6B63;&#x786E;&#x7ED3;&#x679C;<code>POINT(2 3)</code>&#x3002;&#x8FD9;&#x6837;&#x786E;&#x5B9E;&#x5F88;&#x65B9;&#x4FBF;&#xFF0C;&#x4F46;&#x662F;&#x4E5F;&#x4F1A;&#x6709;&#x5F88;&#x591A;&#x95EE;&#x9898;&#x3002;&#x4EE5;&#x540E;&#x5199;&#x7684;&#x65F6;&#x5019;&#x6700;&#x597D;&#x8FD8;&#x662F;&#x5199;&#x6210;&#xFF1A;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> ST_Centroid(ST_GeomFromText(<span class="hljs-string">&apos;LINESTRING(1 2,3 4)&apos;</span>));</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x9664;&#x975E;&#x4F60;&#x7684;&#x4E0A;&#x4E0B;&#x6587;&#x7279;&#x522B;&#x7B80;&#x5355;&#x3002;&#x4E0B;&#x9762;&#x8BF4;&#x8BF4;&#x53EF;&#x80FD;&#x4F1A;&#x51FA;&#x7684;&#x95EE;&#x9898;&#xFF1A;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> ST_Box3D(<span class="hljs-string">&apos;BOX(1 2, 3 4)&apos;</span>);</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x6267;&#x884C;&#x4E0A;&#x9762;&#x8FD9;&#x4E2A;&#x8BED;&#x53E5;&#x4F1A;&#x51FA;&#x5339;&#x914D;&#x4E0D;&#x5230;&#x51FD;&#x6570;&#x7684;&#x9519;&#x8BEF;&#x3002;&#x56E0;&#x4E3A;ST_Box3D&#x53EF;&#x4EE5;&#x63A5;&#x6536;&#x4E00;&#x4E2A;box&#x5BF9;&#x8C61;&#x6216;&#x8005;&#x4E00;&#x4E2A;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x3002;&#x4F46;&#x662F;&#x81EA;&#x52A8;&#x8F6C;&#x6362;&#x4E3A;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x540E;&#xFF0C;PostgreSQL&#x4E0D;&#x77E5;&#x9053;&#x4F60;&#x4F20;&#x5165;&#x7684;&#x662F;&#x4E00;&#x4E2A;box&#x5BF9;&#x8C61;&#x8FD8;&#x662F;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x3002;&#x53E6;&#x4E00;&#x4E2A;&#x4F1A;&#x5931;&#x8D25;&#x7684;&#x4F8B;&#x5B50;&#x662F;&#xFF1A;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> ST_XMin(<span class="hljs-string">&apos;LINESTRING(1 2, 3 4)&apos;</span>);</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x8FD9;&#x662F;&#x56E0;&#x4E3A;&#x6B64;&#x51FD;&#x6570;&#x53EA;&#x662F;&#x7528;&#x4E8E;BOX3D&#x4F7F;&#x7528;&#x7684;&#xFF0C;&#x800C;&#x5E76;&#x6CA1;&#x6709;&#x81EA;&#x52A8;&#x8F6C;&#x6362;&#x80FD;&#x591F;&#x5C06;&#x4E00;&#x4E2A;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x6587;&#x672C;&#x5F62;&#x5F0F;&#x8F6C;&#x6362;&#x4E3A;BOX3D&#x3002;&#x60F3;&#x6210;&#x529F;&#x7684;&#x6267;&#x884C;&#x53EF;&#x4EE5;&#x7528;&#x4E0B;&#x9762;&#x7684;&#x65B9;&#x6CD5;&#xFF1A;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> ST_XMin(<span class="hljs-string">&apos;LINESTRING(1 2, 3 4)&apos;</span>::geometry::box3d);</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="&#x4E8C;&#x3001;&#x8F93;&#x51FA;&#x51FD;&#x6570;"><a href="#&#x4E8C;&#x3001;&#x8F93;&#x51FA;&#x51FD;&#x6570;" class="headerlink" title="&#x4E8C;&#x3001;&#x8F93;&#x51FA;&#x51FD;&#x6570;"></a>&#x4E8C;&#x3001;&#x8F93;&#x51FA;&#x51FD;&#x6570;</h2><p>&#x8F93;&#x51FA;&#x51FD;&#x6570;&#x662F;&#x8FD4;&#x56DE;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x5176;&#x4ED6;&#x5DE5;&#x4E1A;&#x6807;&#x51C6;&#x683C;&#x5F0F;&#x8868;&#x793A;&#x7684;&#x51FD;&#x6570;&#x3002;&#x8FD9;&#x6837;&#x7684;&#x8868;&#x793A;&#x5F62;&#x5F0F;&#x80FD;&#x88AB;&#x5176;&#x4ED6;&#x7B2C;&#x4E09;&#x65B9;&#x5DE5;&#x5177;&#x6765;&#x4F7F;&#x7528;&#x3002;</p>
+<p>&#x672C;&#x8282;&#x6211;&#x4EEC;&#x4F1A;&#x603B;&#x7ED3;&#x53EF;&#x7528;&#x7684;&#x8F93;&#x51FA;&#x683C;&#x5F0F;&#xFF0C;&#x5B83;&#x4EEC;&#x7684;&#x901A;&#x7528;&#x573A;&#x666F;&#xFF0C;&#x4EE5;&#x53CA;PostGIS&#x5982;&#x4F55;&#x8F93;&#x51FA;&#x90A3;&#x79CD;&#x683C;&#x5F0F;&#x3002;&#x5148;&#x8981;&#x4E86;&#x89E3;&#x67D0;&#x79CD;&#x683C;&#x5F0F;&#x7684;&#x5177;&#x4F53;&#x7EC6;&#x8282;&#x7684;&#x8BDD;&#xFF0C;&#x9700;&#x8981;&#x53BB;&#x5B83;&#x7684;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x67E5;&#x770B;&#xFF0C;&#x8FD9;&#x91CC;&#x4E0D;&#x8BA8;&#x8BBA;&#x5B83;&#x4EEC;&#x7684;&#x7EC6;&#x8282;&#x3002;</p>
+<h3 id="1&#x3001;WKT&#x548C;WKB"><a href="#1&#x3001;WKT&#x548C;WKB" class="headerlink" title="1&#x3001;WKT&#x548C;WKB"></a>1&#x3001;WKT&#x548C;WKB</h3><p>&#x5BF9;&#x4E8E;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x6765;&#x8BF4;&#xFF0C;WKT&#x662F;&#x6700;&#x901A;&#x7528;&#x7684;OGC&#x6807;&#x51C6;&#x683C;&#x5F0F;&#x3002;</p>
+<p>&#x51E0;&#x4E2A;&#x8F93;&#x51FA;&#x51FD;&#x6570;&#x6709;&#xFF1A;<code>ST_AsText</code>&#x3001;<code>ST_AsEWKT</code>&#x3001;<code>ST_AsBinary</code>&#x548C;<code>ST_AsEWKB</code>&#x3002;</p>
+<p>&#x8FD9;&#x51E0;&#x4E2A;&#x51FD;&#x6570;&#x662F;&#x4E0A;&#x4E00;&#x8282;&#x4E2D;&#x51E0;&#x4E2A;&#x6784;&#x9020;&#x51FD;&#x6570;&#x7684;&#x76F8;&#x53CD;&#x7684;&#x51FD;&#x6570;&#x3002;</p>
+<h3 id="2&#x3001;KML"><a href="#2&#x3001;KML" class="headerlink" title="2&#x3001;KML"></a>2&#x3001;KML</h3><p>KML&#x5168;&#x79F0;&#x662F;<strong>Keyhole Markup Language</strong>&#xFF0C;&#x662F;&#x4E00;&#x79CD;&#x57FA;&#x4E8E;XML&#x7684;&#x8BED;&#x8A00;&#xFF0C;&#x662F;OGC&#x6807;&#x51C6;&#x652F;&#x6301;&#x7684;&#x6807;&#x51C6;&#x4F20;&#x8F93;&#x683C;&#x5F0F;&#x3002;KML&#x7684;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;&#x662F;4326&#x3002;&#x5373;&#x4F7F;&#x4F60;&#x7684;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x662F;&#x4E00;&#x4E2A;&#x5176;&#x4ED6;&#x7684;SRID&#xFF0C;KML&#x4E5F;&#x4F1A;&#x81EA;&#x52A8;&#x7684;&#x5E2E;&#x4F60;&#x8F6C;&#x6362;&#x4E3A;4326&#x3002;</p>
+<p>&#x8F93;&#x51FA;KML&#x683C;&#x5F0F;&#x7684;&#x51FD;&#x6570;&#x4E3A;&#xFF1A;<code>ST_AsKML</code>&#x3002;&#x5B83;&#x652F;&#x6301;2D&#x548C;3D&#xFF0C;&#x4F46;&#x662F;&#x5BF9;&#x4E8E;&#x66F2;&#x7EBF;&#x51E0;&#x4F55;&#x548C;&#x5BB9;&#x5668;&#x4F1A;&#x62A5;&#x9519;&#x3002;KML&#x4E0D;&#x4F1A;&#x8F93;&#x51FA;M&#x7EF4;&#x3002;</p>
+<h3 id="3&#x3001;GML"><a href="#3&#x3001;GML" class="headerlink" title="3&#x3001;GML"></a>3&#x3001;GML</h3><p>GML&#x5168;&#x79F0;&#x662F;<strong>Geography Markup Language</strong>&#xFF0C;&#x662F;&#x4E00;&#x79CD;&#x57FA;&#x4E8E;XML&#x7684;&#x8BED;&#x8A00;&#xFF0C;&#x662F;OGC&#x6807;&#x51C6;&#x652F;&#x6301;&#x7684;&#x6807;&#x51C6;&#x4F20;&#x8F93;&#x683C;&#x5F0F;&#x3002;</p>
+<p>&#x8F93;&#x51FA;GML&#x683C;&#x5F0F;&#x7684;&#x51FD;&#x6570;&#x4E3A;&#xFF1A;<code>ST_AsGML</code>&#x3002;&#x5BF9;&#x4E8E;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#x548C;&#x5BB9;&#x5668;&#x90FD;&#x652F;&#x6301;2D&#x3001;3D&#xFF0C;M&#x7EF4;&#x4F1A;&#x88AB;&#x5FFD;&#x7565;&#x3002;&#x66F2;&#x7EBF;&#x51E0;&#x4F55;&#x4F1A;&#x62A5;&#x9519;&#x3002;</p>
+<h3 id="4&#x3001;GeoJSON"><a href="#4&#x3001;GeoJSON" class="headerlink" title="4&#x3001;GeoJSON"></a>4&#x3001;GeoJSON</h3><p>GeoJSON&#x7684;&#x5168;&#x79F0;&#x662F;<strong>Geometry JavaScript Object Notation</strong>&#xFF0C;&#x662F;&#x4E00;&#x79CD;&#x57FA;&#x4E8E;JSON&#x7684;&#x683C;&#x5F0F;&#x3002;</p>
+<p>&#x8F93;&#x51FA;GeoJSON&#x683C;&#x5F0F;&#x7684;&#x51FD;&#x6570;&#x4E3A;&#xFF1A;<code>ST_AsGeoJSON</code>&#x3002;&#x5BF9;&#x4E8E;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#x548C;&#x5BB9;&#x5668;&#x90FD;&#x652F;&#x6301;2D&#x3001;3D&#xFF0C;M&#x7EF4;&#x4F1A;&#x88AB;&#x5FFD;&#x7565;&#x3002;&#x66F2;&#x7EBF;&#x51E0;&#x4F55;&#x4F1A;&#x62A5;&#x9519;&#x3002;</p>
+<h3 id="5&#x3001;SVG"><a href="#5&#x3001;SVG" class="headerlink" title="5&#x3001;SVG"></a>5&#x3001;SVG</h3><p>SVG&#x7684;&#x5168;&#x79F0;&#x662F;<strong>Scalable Vector Graphics</strong>&#xFF0C;&#x53EF;&#x7F29;&#x653E;&#x77E2;&#x91CF;&#x56FE;&#x5F62;&#x3002;</p>
+<p>&#x8F93;&#x51FA;SVG&#x683C;&#x5F0F;&#x7684;&#x51FD;&#x6570;&#x4E3A;&#xFF1A;<code>ST_AsSVG</code>&#x3002;&#x4EC5;&#x652F;&#x6301;2D&#x3002;</p>
+<h3 id="6&#x3001;Geohash"><a href="#6&#x3001;Geohash" class="headerlink" title="6&#x3001;Geohash"></a>6&#x3001;Geohash</h3><p>Geohash&#x662F;&#x4E00;&#x79CD;&#x7528;&#x4E8E;&#x7ECF;&#x7EAC;&#x5EA6;&#x7684;&#x6709;&#x635F;&#x5730;&#x7406;&#x7F16;&#x7801;&#x7CFB;&#x7EDF;&#x3002;</p>
+<p>&#x8F93;&#x51FA;Geohash&#x7684;&#x51FD;&#x6570;&#x4E3A;&#xFF1A;<code>ST_AsGeohash</code>&#x3002;&#x5B83;&#x6C38;&#x8FDC;&#x8F93;&#x51FA;4326&#x53C2;&#x8003;&#x7CFB;&#x7684;&#x5750;&#x6807;&#x3002;&#x5B83;&#x53EF;&#x4EE5;&#x652F;&#x6301;&#x66F2;&#x9762;&#x51E0;&#x4F55;&#xFF0C;&#x4F46;&#x662F;&#x4F1A;&#x5FFD;&#x7565;Z&#x548C;M&#x7EF4;&#x3002;</p>
+<h3 id="7&#x3001;&#x4F8B;&#x5B50;"><a href="#7&#x3001;&#x4F8B;&#x5B50;" class="headerlink" title="7&#x3001;&#x4F8B;&#x5B50;"></a>7&#x3001;&#x4F8B;&#x5B50;</h3><p>&#x73B0;&#x5728;&#x6211;&#x4EEC;&#x6765;&#x5C55;&#x793A;&#x4E00;&#x4E0B;&#x4E0A;&#x9762;&#x63D0;&#x5230;&#x7684;&#x5404;&#x4E2A;&#x8F93;&#x51FA;&#x51FD;&#x6570;&#xFF1A;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> </span><br><span class="line">    ST_AsGML(geom,<span class="hljs-number">5</span>) <span class="hljs-keyword">AS</span> GML, </span><br><span class="line">    ST_AsKML(geom,<span class="hljs-number">5</span>) <span class="hljs-keyword">As</span> KML, </span><br><span class="line">    ST_AsGeoJSON(geom,<span class="hljs-number">5</span>) <span class="hljs-keyword">As</span> GeoJSON, </span><br><span class="line">    ST_AsSVG(geom,<span class="hljs-number">0</span>,<span class="hljs-number">5</span>) <span class="hljs-keyword">As</span> SVG_Absolute, </span><br><span class="line">    ST_AsSVG(geom,<span class="hljs-number">1</span>,<span class="hljs-number">5</span>) <span class="hljs-keyword">As</span> SVG_Relative, </span><br><span class="line">    ST_GeoHash(geom) <span class="hljs-keyword">As</span> Geohash</span><br><span class="line"><span class="hljs-keyword">FROM</span> (<span class="hljs-keyword">SELECT</span> ST_GeomFromText(<span class="hljs-string">&apos;LINESTRING(2 48, 0 51)&apos;</span>, <span class="hljs-number">4326</span>) <span class="hljs-keyword">As</span> geom) foo;</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x662F;&#x5BF9;&#x4E8E;&#x4E00;&#x4E2A;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#xFF0C;&#x7528;&#x5404;&#x4E2A;&#x51FD;&#x6570;&#x8F93;&#x51FA;&#x4E86;&#x4E00;&#x4E0B;&#xFF0C;&#x8F93;&#x51FA;&#x7ED3;&#x679C;&#x5982;&#x4E0B;&#xFF1A;</p>
+<p></p><figure class="highlight gml hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#GML</span><br><span class="line">&lt;gml:LineString srsName=<span class="hljs-string">&quot;EPSG:4326&quot;</span>&gt;</span><br><span class="line">    &lt;gml:coordinates&gt;<span class="hljs-number">2</span>,<span class="hljs-number">48</span> <span class="hljs-number">0</span>,<span class="hljs-number">51</span>&lt;/gml:coordinates&gt;&lt;/gml:LineString&gt;</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p></p><figure class="highlight xml hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#KML</span><br><span class="line"><span class="hljs-tag">&lt;<span class="hljs-name">LineString</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">coordinates</span>&gt;</span>2,48 0,51<span class="hljs-tag">&lt;/<span class="hljs-name">coordinates</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">LineString</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure><p></p>
+<p></p><figure class="highlight json hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#GeoJSON</span><br><span class="line">{<span class="hljs-attr">&quot;type&quot;</span>:<span class="hljs-string">&quot;LineString&quot;</span>,<span class="hljs-attr">&quot;coordinates&quot;</span>:[[<span class="hljs-number">2</span>,<span class="hljs-number">48</span>],[<span class="hljs-number">0</span>,<span class="hljs-number">51</span>]]}</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p></p><figure class="highlight plain hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#SVG_Absolute</span><br><span class="line">M 2 -48 L 0 -51</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p></p><figure class="highlight plain hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#SVG_Relative</span><br><span class="line">M 2 -48 l -2 -3</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="&#x4E09;&#x3001;&#x8BFB;&#x53D6;-&#x8BBE;&#x7F6E;&#x51FD;&#x6570;"><a href="#&#x4E09;&#x3001;&#x8BFB;&#x53D6;-&#x8BBE;&#x7F6E;&#x51FD;&#x6570;" class="headerlink" title="&#x4E09;&#x3001;&#x8BFB;&#x53D6;/&#x8BBE;&#x7F6E;&#x51FD;&#x6570;"></a>&#x4E09;&#x3001;&#x8BFB;&#x53D6;/&#x8BBE;&#x7F6E;&#x51FD;&#x6570;</h2><p>&#x5982;&#x679C;&#x4F60;&#x7528;&#x8FC7;&#x4E00;&#x79CD;&#x9762;&#x5411;&#x5BF9;&#x8C61;&#x8BED;&#x8A00;&#xFF0C;&#x90A3;&#x4E48;&#x4E00;&#x5B9A;&#x5BF9;getters&#x548C;setters&#x4E0D;&#x4F1A;&#x964C;&#x751F;&#xFF0C;&#x8FD9;&#x4E00;&#x8282;&#x7684;&#x51FD;&#x6570;&#x5C31;&#x548C;&#x5B83;&#x4EEC;&#x4E00;&#x6837;&#x3002;&#x8FD9;&#x4E00;&#x7CFB;&#x5217;&#x7684;&#x51FD;&#x6570;&#x5C31;&#x662F;&#x6765;&#x81EA;&#x4E8E;&#x9762;&#x5411;&#x5BF9;&#x8C61;&#x7F16;&#x7A0B;&#xFF0C;&#x5B83;&#x4EEC;&#x7528;&#x6765;&#x83B7;&#x53D6;&#x6216;&#x8BBE;&#x7F6E;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x5185;&#x5728;&#x5C5E;&#x6027;&#x3002;</p>
+<h3 id="1&#x3001;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;"><a href="#1&#x3001;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;" class="headerlink" title="1&#x3001;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;"></a>1&#x3001;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;</h3><p>&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;&#x5141;&#x8BB8;&#x6709;&#x610F;&#x4E49;&#x7684;&#x6D4B;&#x91CF;&#xFF0C;&#x5E76;&#x4E14;&#x4F7F;&#x5F97;&#x5206;&#x4EAB;&#x6570;&#x636E;&#x53EF;&#x80FD;&#x5B9E;&#x73B0;&#x3002;</p>
+<p>&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;&#x7684;&#x83B7;&#x53D6;&#x8BBE;&#x7F6E;&#x51FD;&#x6570;&#x4E3A;&#xFF1A;<code>ST_SRID</code>&#x548C;<code>ST_setSRID</code>&#x3002;&#x5B83;&#x4EEC;&#x90FD;&#x662F;SQL/MM&#x6807;&#x51C6;&#x3002;</p>
+<p>&#x8BB0;&#x4F4F;&#x6BCF;&#x4E00;&#x4E2A;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x90FD;&#x5FC5;&#x987B;&#x6709;&#x4E00;&#x4E2A;SRID&#xFF0C;&#x5373;&#x4F7F;&#x662F;&#x4E00;&#x4E2A;&#x672A;&#x77E5;&#x7684;SRID&#xFF08;-1&#xFF09;&#x3002;</p>
+<h3 id="2&#x3001;&#x8F6C;&#x6362;&#x5230;&#x53E6;&#x4E00;&#x4E2A;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;"><a href="#2&#x3001;&#x8F6C;&#x6362;&#x5230;&#x53E6;&#x4E00;&#x4E2A;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;" class="headerlink" title="2&#x3001;&#x8F6C;&#x6362;&#x5230;&#x53E6;&#x4E00;&#x4E2A;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;"></a>2&#x3001;&#x8F6C;&#x6362;&#x5230;&#x53E6;&#x4E00;&#x4E2A;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;</h3><p>&#x6CA1;&#x6709;&#x4ECB;&#x7ECD;ST_transform&#x51FD;&#x6570;&#x7684;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x8BA8;&#x8BBA;&#x662F;&#x4E0D;&#x5B8C;&#x6574;&#x7684;&#xFF0C;&#x5B83;&#x53EF;&#x4EE5;<strong>&#x5C06;&#x51E0;&#x4F55;&#x56FE;&#x5F62;&#x4E2D;&#x70B9;&#x7684;&#x5750;&#x6807;&#x5168;&#x90E8;&#x8F6C;&#x6362;&#x4E3A;&#x53E6;&#x4E00;&#x4E2A;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;&#x7684;</strong>&#x3002;&#x4E00;&#x4E2A;&#x5E38;&#x89C1;&#x7684;&#x8F6C;&#x6362;&#x662F;&#x5730;&#x7406;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;&#xFF08;4326&#xFF09;&#x8F6C;&#x6362;&#x4E3A;&#x5176;&#x4ED6;&#x5E73;&#x9762;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;&#x3002;&#x4E0B;&#x9762;&#x662F;&#x4E00;&#x4E2A;&#x4F8B;&#x5B50;&#xFF1A;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> ST_AsEWKT(ST_Transform(ST_GeomFromEWKT(<span class="hljs-string">&apos;SRID=4326;</span></span><br><span class="line"><span class="hljs-string">    LINESTRING(-73 41, -72 42)&apos;</span>), <span class="hljs-number">32618</span>));</span><br><span class="line"></span><br><span class="line">OUPUT: SRID=32618;LINESTRING(668207.885193807 4540683.52927658,</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;748464.920712384 4654130.89132331)</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x6CE8;&#x610F;&#xFF0C;setSRID&#x548C;transform&#x7684;&#x4F5C;&#x7528;&#x5927;&#x4E0D;&#x76F8;&#x540C;&#x3002;</p>
+<h3 id="3&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;"><a href="#3&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;" class="headerlink" title="3&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;"></a>3&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;</h3><p>&#x5728;&#x5927;&#x90E8;&#x5206;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x4F60;&#x6E05;&#x695A;&#x7684;&#x77E5;&#x9053;&#x4F60;&#x6B63;&#x5728;&#x64CD;&#x4F5C;&#x7684;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#xFF0C;&#x4F46;&#x662F;&#x6709;&#x7684;&#x65F6;&#x5019;&#x4F60;&#x5E76;&#x4E0D;&#x6E05;&#x695A;&#x3002;&#x8FD9;&#x65F6;&#x4F60;&#x53EF;&#x4EE5;&#x501F;&#x52A9;&#x4E24;&#x4E2A;&#x51FD;&#x6570;&#xFF1A;<code>GeometryType</code>&#x548C;<code>ST_GeometryType</code>&#x3002;&#x524D;&#x8005;&#x5DF2;&#x7ECF;&#x88AB;&#x6807;&#x8BB0;&#x4E3A;&#x8981;&#x5E9F;&#x5F03;&#x7684;&#x4E86;&#x3002;&#x8FD9;&#x4E24;&#x8005;&#x4E0D;&#x4EC5;&#x4E92;&#x4E0D;&#x76F8;&#x540C;&#xFF0C;&#x800C;&#x4E14;&#x5B83;&#x4EEC;&#x4E5F;&#x90FD;&#x5F88;&#x6709;&#x7528;&#x3002;</p>
+<p>&#x524D;&#x8005;&#x51FA;&#x73B0;&#x7684;&#x65F6;&#x95F4;&#x6BD4;&#x8F83;&#x65E9;&#xFF0C;&#x5B83;&#x662F;OGC&#x6807;&#x51C6;&#x7684;&#x3002;&#x5B83;&#x8FD4;&#x56DE;&#x7684;&#x7C7B;&#x578B;&#x662F;&#x6211;&#x4EEC;&#x6240;&#x719F;&#x6089;&#x7684;&#xFF0C;&#x5168;&#x90E8;&#x5927;&#x5199;&#x7684;&#x3002;&#x4F8B;&#x5982;POINT&#x3001;POLYGON&#x3002;</p>
+<p>&#x540E;&#x8005;&#x51FA;&#x73B0;&#x8F83;&#x665A;&#xFF0C;&#x5B83;&#x662F;OpenGIS SQL/MM&#x7684;&#x4E00;&#x90E8;&#x5206;&#x3002;&#x5B83;&#x8FD4;&#x56DE;&#x4EE5;ST&#x4E3A;&#x524D;&#x7F00;&#x7684;&#x7C7B;&#x578B;&#x3002;&#x4F8B;&#x5982;ST_Point&#x3001;ST_Polygon&#x3002;</p>
+<h3 id="4&#x3001;&#x5750;&#x6807;&#x548C;&#x51E0;&#x4F55;&#x7EF4;&#x5EA6;"><a href="#4&#x3001;&#x5750;&#x6807;&#x548C;&#x51E0;&#x4F55;&#x7EF4;&#x5EA6;" class="headerlink" title="4&#x3001;&#x5750;&#x6807;&#x548C;&#x51E0;&#x4F55;&#x7EF4;&#x5EA6;"></a>4&#x3001;&#x5750;&#x6807;&#x548C;&#x51E0;&#x4F55;&#x7EF4;&#x5EA6;</h3><p>&#x8FD9;&#x91CC;&#x6CE8;&#x610F;&#x4E2A;&#x4E8B;&#x60C5;&#xFF1A;<strong>&#x5750;&#x6807;&#x7EF4;&#x5EA6;&#x548C;&#x51E0;&#x4F55;&#x7EF4;&#x5EA6;</strong>&#x7684;&#x533A;&#x522B;&#x3002;</p>
+<ul>
+<li><p>&#x5750;&#x6807;&#x7EF4;&#x5EA6;&#x662F;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x6240;&#x5728;&#x7684;&#x5411;&#x91CF;&#x7A7A;&#x95F4;&#x7684;&#x7EF4;&#x5EA6;&#xFF0C;&#x5728;PostGIS&#x4E2D;&#x53EF;&#x4EE5;&#x662F;2&#x3001;3&#x3001;4&#x3002;</p>
+</li>
+<li><p>&#x51E0;&#x4F55;&#x7EF4;&#x5EA6;&#x662F;&#x4E3A;&#x4E86;&#x5B8C;&#x5168;&#x76DB;&#x4E0B;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x6240;&#x9700;&#x8981;&#x7684;&#x6700;&#x5C0F;&#x5411;&#x91CF;&#x7A7A;&#x95F4;&#x7EF4;&#x5EA6;&#x3002;&#x5728;PostGIS&#x4E2D;&#x53EF;&#x4EE5;&#x662F;&#xFF1A;0&#xFF08;&#x70B9;&#xFF09;&#x3001;1&#xFF08;&#x7EBF;&#x4E32;&#xFF09;&#x3001;2&#xFF08;&#x591A;&#x8FB9;&#x5F62;&#xFF09;&#x3002;</p>
+</li>
+</ul>
+<p>PostGIS&#x63D0;&#x4F9B;&#x4E86;<code>ST_CoordDim</code>&#x548C;<code>ST_Dimension</code>&#x6765;&#x5206;&#x522B;&#x8FD4;&#x56DE;&#x5750;&#x6807;&#x7EF4;&#x5EA6;&#x548C;&#x51E0;&#x4F55;&#x7EF4;&#x5EA6;&#x3002;</p>
+<h3 id="5&#x3001;&#x51E0;&#x4F55;&#x56FE;&#x5F62;&#x6709;&#x6548;&#x6027;"><a href="#5&#x3001;&#x51E0;&#x4F55;&#x56FE;&#x5F62;&#x6709;&#x6548;&#x6027;" class="headerlink" title="5&#x3001;&#x51E0;&#x4F55;&#x56FE;&#x5F62;&#x6709;&#x6548;&#x6027;"></a>5&#x3001;&#x51E0;&#x4F55;&#x56FE;&#x5F62;&#x6709;&#x6548;&#x6027;</h3><p>&#x975E;&#x6CD5;&#x7684;&#x51E0;&#x4F55;&#x56FE;&#x5F62;&#xFF0C;&#x4F8B;&#x5982;&#x81EA;&#x76F8;&#x4EA4;&#x6216;&#x8005;&#x5185;&#x73AF;&#x5728;&#x5916;&#x73AF;&#x4E4B;&#x5916;&#x7684;&#x591A;&#x8FB9;&#x5F62;&#x3002;&#x53EF;&#x4EE5;&#x8BF4;&#xFF0C;&#x51E0;&#x4F55;&#x7EF4;&#x5EA6;&#x8D8A;&#x9AD8;&#xFF0C;&#x5B83;&#x5C31;&#x8D8A;&#x53EF;&#x80FD;&#x662F;&#x975E;&#x6CD5;&#x7684;&#x3002;</p>
+<p><code>ST_isValid</code>&#x53EF;&#x4EE5;&#x9A8C;&#x8BC1;&#x51E0;&#x4F55;&#x56FE;&#x5F62;&#x7684;&#x6709;&#x6548;&#x6027;&#xFF0C;<code>ST_IsValidReason</code>&#x53EF;&#x4EE5;&#x67E5;&#x770B;&#x51E0;&#x4F55;&#x56FE;&#x5F62;&#x975E;&#x6CD5;&#x7684;&#x7B80;&#x5355;&#x63CF;&#x8FF0;&#xFF0C;&#x6709;&#x591A;&#x6761;&#x539F;&#x56E0;&#x4E5F;&#x53EA;&#x8FD4;&#x56DE;&#x4E00;&#x6761;&#x3002;<code>ST_IsValidDetail</code>&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x975E;&#x6CD5;&#x539F;&#x56E0;&#x7684;&#x96C6;&#x5408;&#xFF0C;</p>
+<p>&#x4E0D;&#x8981;&#x5C1D;&#x8BD5;&#x64CD;&#x4F5C;&#x4E00;&#x4E2A;&#x975E;&#x6CD5;&#x7684;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x3002;&#x8BB8;&#x591A;&#x57FA;&#x4E8E;GEOS&#x7684;&#x51FD;&#x6570;&#x9047;&#x5230;&#x975E;&#x6CD5;&#x7684;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x53EF;&#x80FD;&#x4F1A;&#x6709;&#x9884;&#x6599;&#x4E0D;&#x5230;&#x7684;&#x7ED3;&#x679C;&#x3002;</p>
+<h3 id="6&#x3001;&#x5B9A;&#x4E49;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x70B9;&#x7684;&#x4E2A;&#x6570;"><a href="#6&#x3001;&#x5B9A;&#x4E49;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x70B9;&#x7684;&#x4E2A;&#x6570;" class="headerlink" title="6&#x3001;&#x5B9A;&#x4E49;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x70B9;&#x7684;&#x4E2A;&#x6570;"></a>6&#x3001;&#x5B9A;&#x4E49;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x70B9;&#x7684;&#x4E2A;&#x6570;</h3><p><code>ST_NPoints</code>&#x53EF;&#x4EE5;&#x8FD4;&#x56DE;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x4E2D;&#x70B9;&#x7684;&#x4E2A;&#x6570;&#xFF0C;&#x5B83;&#x53EF;&#x4EE5;&#x5E94;&#x7528;&#x4E8E;&#x4EFB;&#x610F;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x3002;&#x8FD8;&#x6709;&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x51FD;&#x6570;<code>ST_NumPoints</code>&#x4F5C;&#x7528;&#x548C;&#x5B83;&#x5DEE;&#x4E0D;&#x591A;&#x3002;&#x4F46;&#x662F;&#x540E;&#x8005;&#x53EA;&#x80FD;&#x7528;&#x4E8E;&#x7EBF;&#x4E32;&#x3002;&#x5F53;&#x5E94;&#x7528;&#x4E8E;&#x591A;&#x7EBF;&#x4E32;&#x65F6;&#xFF0C;&#x53EA;&#x4F1A;&#x8FD4;&#x56DE;&#x7B2C;&#x4E00;&#x4E2A;&#x7EBF;&#x4E32;&#x7684;&#x70B9;&#x6570;&#x3002;</p>
+<p>&#x4F60;&#x53EF;&#x80FD;&#x4F1A;&#x597D;&#x5947;&#x4E3A;&#x4EC0;&#x4E48;&#x4F1A;&#x6709;&#x4E24;&#x4E2A;&#x8FD9;&#x4E48;&#x76F8;&#x4F3C;&#x7684;&#x51FD;&#x6570;&#xFF0C;&#x660E;&#x660E;&#x7B2C;&#x4E00;&#x4E2A;&#x51FD;&#x6570;&#x5B8C;&#x5168;&#x53EF;&#x4EE5;&#x8986;&#x76D6;&#x7B2C;&#x4E8C;&#x4E2A;&#x3002;&#x56E0;&#x4E3A;&#x7B2C;&#x4E8C;&#x4E2A;&#x662F;OGC&#x6807;&#x51C6;&#x7684;&#xFF0C;&#x4EFB;&#x4F55;&#x7A7A;&#x95F4;&#x6570;&#x636E;&#x5E93;&#x90FD;&#x5FC5;&#x987B;&#x6EE1;&#x8DB3;OGC&#x6807;&#x51C6;&#xFF0C;&#x4E4B;&#x540E;&#x518D;&#x53D1;&#x73B0;&#x5B83;&#x7684;&#x4E0D;&#x8DB3;&#x4E4B;&#x5904;&#x8FDB;&#x884C;&#x5F25;&#x8865;&#x3002;&#x4E0B;&#x9762;&#x7684;&#x4F8B;&#x5B50;&#x53EF;&#x4EE5;&#x67E5;&#x8BE2;&#x4E24;&#x4E2A;&#x51FD;&#x6570;&#x7684;&#x4E0D;&#x540C;&#x4E4B;&#x5904;&#xFF1A;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> <span class="hljs-keyword">type</span>, ST_NPoints(geom) <span class="hljs-keyword">As</span> npoints,</span><br><span class="line">ST_NumPoints(geom) <span class="hljs-keyword">As</span> numpoints</span><br><span class="line"><span class="hljs-keyword">FROM</span> (<span class="hljs-keyword">VALUES</span> </span><br><span class="line">    (<span class="hljs-string">&apos;LinestringM&apos;</span> , ST_GeomFromEWKT(<span class="hljs-string">&apos;LINESTRINGM(1 2 3, 3 4 5, 5 8 7, 6 10 11)&apos;</span>)),</span><br><span class="line">    (<span class="hljs-string">&apos;Circularstring&apos;</span>, ST_GeomFromText(<span class="hljs-string">&apos;CIRCULARSTRING(2.5 2.5, 4.5 2.5, 4.5 4.5)&apos;</span>)),</span><br><span class="line">    (<span class="hljs-string">&apos;Polygon (Triangle)&apos;</span>, ST_GeomFromText(<span class="hljs-string">&apos;POLYGON((0 1,1 -1,-1 -1,0 1))&apos;</span>)),</span><br><span class="line">    (<span class="hljs-string">&apos;Multilinestring&apos;</span>,    ST_GeomFromText(<span class="hljs-string">&apos;MULTILINESTRING ((1 2, 3 4, 5 6), (10 20, 30 40))&apos;</span>)),</span><br><span class="line">    (<span class="hljs-string">&apos;Collection&apos;</span>, ST_Collect(ST_GeomFromText(<span class="hljs-string">&apos;POLYGON((0 1,1 -1,-1 -1,0 1))&apos;</span>),ST_Point(<span class="hljs-number">1</span>,<span class="hljs-number">3</span>)))</span><br><span class="line">) <span class="hljs-keyword">As</span> foo(<span class="hljs-keyword">type</span>, geom);</span><br></pre></td></tr></tbody></table></figure><p></p>
+<h2 id="&#x56DB;&#x3001;&#x5EA6;&#x91CF;&#x51FD;&#x6570;"><a href="#&#x56DB;&#x3001;&#x5EA6;&#x91CF;&#x51FD;&#x6570;" class="headerlink" title="&#x56DB;&#x3001;&#x5EA6;&#x91CF;&#x51FD;&#x6570;"></a>&#x56DB;&#x3001;&#x5EA6;&#x91CF;&#x51FD;&#x6570;</h2><p>&#x5E73;&#x9762;&#x6D4B;&#x91CF;&#x901A;&#x5E38;&#x4EE5;&#x7C73;&#x6216;&#x82F1;&#x5C3A;&#x4E3A;&#x5355;&#x4F4D;&#x3002;&#x5E73;&#x9762;&#x6A21;&#x578B;&#x518D;GIS&#x5DE5;&#x5177;&#x4E2D;&#x88AB;&#x652F;&#x6301;&#x7684;&#x66F4;&#x597D;&#x4E00;&#x4E9B;&#xFF0C;&#x5904;&#x7406;&#x7684;&#x4E5F;&#x66F4;&#x5FEB;&#x4E00;&#x70B9;&#x3002;&#x5982;&#x679C;&#x53EA;&#x662F;&#x5728;&#x5927;&#x9646;&#x4E0A;&#x8FDB;&#x884C;&#x6D4B;&#x91CF;&#x7684;&#x8BDD;&#xFF0C;&#x5E73;&#x9762;&#x901A;&#x5E38;&#x4E5F;&#x662F;&#x9996;&#x9009;&#xFF0C;&#x867D;&#x7136;&#x4F1A;&#x6D6A;&#x8D39;&#x4E00;&#x4E9B;&#x7CBE;&#x5EA6;&#x3002;&#x5F53;&#x8DE8;&#x8D8A;&#x5927;&#x9646;&#x6216;&#x8005;&#x6D77;&#x6D0B;&#x65F6;&#xFF0C;&#x5E73;&#x9762;&#x6A21;&#x578B;&#x7684;&#x6548;&#x679C;&#x5F00;&#x59CB;&#x6025;&#x901F;&#x7684;&#x53D8;&#x574F;&#x3002;&#x8FD9;&#x65F6;&#x5C31;&#x8981;&#x7528;&#x5730;&#x7406;&#x6A21;&#x578B;&#x4E86;&#xFF0C;&#x5FC5;&#x987B;&#x8003;&#x8651;&#x5730;&#x7403;&#x7684;&#x7403;&#x5F62;&#x7279;&#x6027;&#x3002;SRID4326&#x662F;&#x6700;&#x5E38;&#x7528;&#x7684;&#x5730;&#x7406;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;&#x3002;</p>
+<h3 id="1&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#x7684;&#x5E73;&#x9762;&#x6D4B;&#x91CF;"><a href="#1&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#x7684;&#x5E73;&#x9762;&#x6D4B;&#x91CF;" class="headerlink" title="1&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#x7684;&#x5E73;&#x9762;&#x6D4B;&#x91CF;"></a>1&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#x7684;&#x5E73;&#x9762;&#x6D4B;&#x91CF;</h3><p>&#x6211;&#x4EEC;&#x6240;&#x8BA8;&#x8BBA;&#x7684;&#x6240;&#x6709;&#x7684;&#x5E73;&#x9762;&#x6D4B;&#x91CF;&#x51FD;&#x6570;&#x7684;&#x5355;&#x4F4D;&#x90FD;&#x548C;&#x8BE5;&#x51E0;&#x4F55;&#x5BF9;&#x8C61;&#x7684;&#x7A7A;&#x95F4;&#x53C2;&#x8003;&#x7CFB;&#x4E00;&#x6837;&#x3002;</p>
+<p>&#x4E0B;&#x9762;&#x662F;&#x4E00;&#x4E2A;&#x6D4B;&#x91CF;&#x8DDD;&#x79BB;&#x7684;&#x4F8B;&#x5B50;&#xFF1A;</p>
+<p></p><figure class="highlight sql hljs"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="hljs-keyword">SELECT</span> ST_Length(geom) <span class="hljs-keyword">As</span> length_2d</span><br><span class="line"><span class="hljs-keyword">FROM</span> (<span class="hljs-keyword">VALUES</span></span><br><span class="line">    (ST_GeomFromEWKT(<span class="hljs-string">&apos;LINESTRING(1 2 3, 4 5 6)&apos;</span>)),</span><br><span class="line">    (ST_GeomFromEWKT(<span class="hljs-string">&apos;LINESTRING(1 2, 4 5)&apos;</span>))</span><br><span class="line">) <span class="hljs-keyword">As</span> foo(geom);</span><br><span class="line"></span><br><span class="line"><span class="hljs-comment">#OUPUT&#xFF1A;</span></span><br><span class="line">4.24264068711928</span><br><span class="line">4.24264068711928</span><br></pre></td></tr></tbody></table></figure><p></p>
+<p>&#x8FD9;&#x91CC;&#x4E66;&#x4E0A;&#x672C;&#x6765;&#x8FD8;&#x6709;&#x4E2A;ST_Length3D&#x7684;&#xFF0C;&#x4F46;&#x662F;&#x6211;&#x7528;&#x7684;&#x8FD9;&#x4E2A;&#x7248;&#x672C;&#x5DF2;&#x7ECF;&#x628A;&#x5B83;&#x5E9F;&#x5F03;&#x4E86;&#x3002;</p>
+<p>&#x9664;&#x4E86;&#x6D4B;&#x91CF;&#x8DDD;&#x79BB;&#xFF0C;&#x8FD8;&#x6709;<code>ST_Area</code> &#x548C; <code>ST_Perimeter</code>&#x6765;&#x6D4B;&#x9762;&#x79EF;&#x548C;&#x5468;&#x957F;&#x3002;</p>
+<h3 id="2&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#x7684;&#x5730;&#x7406;&#x6D4B;&#x91CF;"><a href="#2&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#x7684;&#x5730;&#x7406;&#x6D4B;&#x91CF;" class="headerlink" title="2&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#x7684;&#x5730;&#x7406;&#x6D4B;&#x91CF;"></a>2&#x3001;&#x51E0;&#x4F55;&#x7C7B;&#x578B;&#x7684;&#x5730;&#x7406;&#x6D4B;&#x91CF;</h3><p>&#x4E4B;&#x524D;&#x8BA8;&#x8BBA;&#x7684;&#x90FD;&#x662F;&#x5728;&#x7B1B;&#x5361;&#x5C14;&#x7CFB;&#x4E2D;&#x7684;&#x51E0;&#x4F55;&#x6D4B;&#x91CF;&#xFF0C;&#x73B0;&#x5728;&#x5F00;&#x59CB;&#x770B;&#x4E0B;&#x7403;&#x5750;&#x6807;&#x7CFB;&#x7684;&#x6D4B;&#x91CF;&#x3002;&#x5927;&#x5730;&#x6D4B;&#x91CF;&#x662F;&#x7403;&#x6D4B;&#x91CF;&#x7684;&#x4E00;&#x4E2A;&#x66F4;&#x534E;&#x4E3D;&#x7684;&#x672F;&#x8BED;&#x3002;&#x4F8B;&#x5982;&#x5728;&#x5730;&#x7403;&#x4E0A;&#x4F4D;&#x5904;&#x4E24;&#x4E2A;&#x5BF9;&#x9762;&#x7684;&#x5730;&#x70B9;&#xFF0C;&#x5982;&#x679C;&#x76F4;&#x7EBF;&#x76F8;&#x8FDE;&#x5B83;&#x4EEC;&#xFF0C;&#x8FD9;&#x6761;&#x7EBF;&#x4F1A;&#x7A7F;&#x8FC7;&#x5730;&#x5FC3;&#x3002;&#x800C;&#x5728;&#x5730;&#x9762;&#x4E0A;&#xFF0C;&#x6709;&#x65E0;&#x6570;&#x6761;&#x66F2;&#x7EBF;&#x53EF;&#x4EE5;&#x8FDE;&#x63A5;&#x5B83;&#x4EEC;&#xFF0C;&#x5C3D;&#x7BA1;&#x4F60;&#x603B;&#x662F;&#x6311;&#x4E00;&#x6761;&#x6700;&#x77ED;&#x7684;&#x66F2;&#x7EBF;&#xFF0C;&#x4F46;&#x662F;&#x4E5F;&#x6CA1;&#x529E;&#x6CD5;&#x4FDD;&#x8BC1;&#x5B83;&#x552F;&#x4E00;&#x3002;</p>
+<p>&#x4E66;&#x4E0A;&#x8FD9;&#x91CC;&#x7ED9;&#x51FA;&#x7684;&#x51E0;&#x4E2A;&#x6D4B;&#x91CF;&#x7403;&#x9762;&#x8DDD;&#x79BB;&#x7684;&#x51FD;&#x6570;&#x90FD;&#x88AB;&#x5E9F;&#x5F03;&#x4E86;&#x3002;</p>
+<h1 id="&#x8FD9;&#x672C;&#x4E66;&#x4E0D;&#x80FD;&#x518D;&#x770B;&#x4E86;&#xFF0C;&#x8FD9;&#x662F;PostGIS&#x5B9E;&#x6218;&#x7B2C;&#x4E00;&#x7248;&#xFF0C;PostGIS-&#x7248;&#x672C;&#x662F;1-X&#xFF0C;&#x800C;&#x6211;&#x4EEC;&#x73B0;&#x5728;&#x8981;&#x7528;&#x7684;&#x662F;PostGIS-3-X&#x3002;&#x6539;&#x52A8;&#x5B9E;&#x5728;&#x662F;&#x592A;&#x591A;&#x4E86;&#xFF0C;&#x5F53;&#x524D;&#x8FD9;&#x672C;&#x4E66;&#x4E0A;&#x7684;&#x5185;&#x5BB9;&#x5F88;&#x591A;&#x73B0;&#x5728;&#x90FD;&#x7528;&#x4E0D;&#x4E86;&#x4E86;&#x3002;PostGIS&#x5B9E;&#x6218;&#x4E5F;&#x51FA;&#x5230;&#x7B2C;&#x4E09;&#x7248;&#x4E86;&#xFF0C;&#x5982;&#x679C;&#x4EE5;&#x540E;&#x80FD;&#x62FF;&#x5230;&#x7B2C;&#x4E09;&#x7248;&#x7684;&#x4E66;&#xFF0C;&#x518D;&#x770B;&#x5427;&#x3002;"><a href="#&#x8FD9;&#x672C;&#x4E66;&#x4E0D;&#x80FD;&#x518D;&#x770B;&#x4E86;&#xFF0C;&#x8FD9;&#x662F;PostGIS&#x5B9E;&#x6218;&#x7B2C;&#x4E00;&#x7248;&#xFF0C;PostGIS-&#x7248;&#x672C;&#x662F;1-X&#xFF0C;&#x800C;&#x6211;&#x4EEC;&#x73B0;&#x5728;&#x8981;&#x7528;&#x7684;&#x662F;PostGIS-3-X&#x3002;&#x6539;&#x52A8;&#x5B9E;&#x5728;&#x662F;&#x592A;&#x591A;&#x4E86;&#xFF0C;&#x5F53;&#x524D;&#x8FD9;&#x672C;&#x4E66;&#x4E0A;&#x7684;&#x5185;&#x5BB9;&#x5F88;&#x591A;&#x73B0;&#x5728;&#x90FD;&#x7528;&#x4E0D;&#x4E86;&#x4E86;&#x3002;PostGIS&#x5B9E;&#x6218;&#x4E5F;&#x51FA;&#x5230;&#x7B2C;&#x4E09;&#x7248;&#x4E86;&#xFF0C;&#x5982;&#x679C;&#x4EE5;&#x540E;&#x80FD;&#x62FF;&#x5230;&#x7B2C;&#x4E09;&#x7248;&#x7684;&#x4E66;&#xFF0C;&#x518D;&#x770B;&#x5427;&#x3002;" class="headerlink" title="&#x8FD9;&#x672C;&#x4E66;&#x4E0D;&#x80FD;&#x518D;&#x770B;&#x4E86;&#xFF0C;&#x8FD9;&#x662F;PostGIS&#x5B9E;&#x6218;&#x7B2C;&#x4E00;&#x7248;&#xFF0C;PostGIS &#x7248;&#x672C;&#x662F;1.X&#xFF0C;&#x800C;&#x6211;&#x4EEC;&#x73B0;&#x5728;&#x8981;&#x7528;&#x7684;&#x662F;PostGIS 3.X&#x3002;&#x6539;&#x52A8;&#x5B9E;&#x5728;&#x662F;&#x592A;&#x591A;&#x4E86;&#xFF0C;&#x5F53;&#x524D;&#x8FD9;&#x672C;&#x4E66;&#x4E0A;&#x7684;&#x5185;&#x5BB9;&#x5F88;&#x591A;&#x73B0;&#x5728;&#x90FD;&#x7528;&#x4E0D;&#x4E86;&#x4E86;&#x3002;PostGIS&#x5B9E;&#x6218;&#x4E5F;&#x51FA;&#x5230;&#x7B2C;&#x4E09;&#x7248;&#x4E86;&#xFF0C;&#x5982;&#x679C;&#x4EE5;&#x540E;&#x80FD;&#x62FF;&#x5230;&#x7B2C;&#x4E09;&#x7248;&#x7684;&#x4E66;&#xFF0C;&#x518D;&#x770B;&#x5427;&#x3002;"></a>&#x8FD9;&#x672C;&#x4E66;&#x4E0D;&#x80FD;&#x518D;&#x770B;&#x4E86;&#xFF0C;&#x8FD9;&#x662F;PostGIS&#x5B9E;&#x6218;&#x7B2C;&#x4E00;&#x7248;&#xFF0C;PostGIS &#x7248;&#x672C;&#x662F;1.X&#xFF0C;&#x800C;&#x6211;&#x4EEC;&#x73B0;&#x5728;&#x8981;&#x7528;&#x7684;&#x662F;PostGIS 3.X&#x3002;&#x6539;&#x52A8;&#x5B9E;&#x5728;&#x662F;&#x592A;&#x591A;&#x4E86;&#xFF0C;&#x5F53;&#x524D;&#x8FD9;&#x672C;&#x4E66;&#x4E0A;&#x7684;&#x5185;&#x5BB9;&#x5F88;&#x591A;&#x73B0;&#x5728;&#x90FD;&#x7528;&#x4E0D;&#x4E86;&#x4E86;&#x3002;PostGIS&#x5B9E;&#x6218;&#x4E5F;&#x51FA;&#x5230;&#x7B2C;&#x4E09;&#x7248;&#x4E86;&#xFF0C;&#x5982;&#x679C;&#x4EE5;&#x540E;&#x80FD;&#x62FF;&#x5230;&#x7B2C;&#x4E09;&#x7248;&#x7684;&#x4E66;&#xFF0C;&#x518D;&#x770B;&#x5427;&#x3002;</h1></body></html>
+    
+    </div>
+    
+    
+    <div class="columns is-mobile is-multiline article-nav">
+        <span class="column is-12-mobile is-half-desktop  article-nav-prev">
+            
+            <a href="/2020/05/29/write-psql-extension/">编写PostgreSQL扩展插件</a>
+            
+        </span>
+        <span class="column is-12-mobile is-half-desktop  article-nav-next">
+            
+            <a href="/2020/05/16/postgis-in-action-ch3/">PostGIS实战-第三章 组织空间数据</a>
+            
+        </span>
+    </div>
+    
+</article>
+
+
+
+
+<div class="comments">
+    <h3 class="title is-4">Comments</h3>
+    
+<div id="valine-thread"></div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#valine-thread',
+        appId: 'FgIQVv5B2kd1MwbTL9glqpQf-gzGzoHsz',
+        appKey: 'r47AH79b8Oiqd2FTHu7lWE1A',
+        notify: false,
+        verify: false,
+        avatar: '',
+        placeholder: 'Welcome to leave a comment',
+        meta: ['nick', 'mail'],
+        visitor: true,
+        lang: ''
+    })
+</script>
+
+
+</div>
+
+    </div>
+</section>
+    <footer class="footer">
+    <div class="container">
+        <div class="columns content">
+            <div class="column is-narrow has-text-centered">
+                &copy; 2020 Jinke Gong&nbsp;
+                Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> & <a
+                        href="http://github.com/ppoffice/hexo-theme-minos">Minos</a>
+            </div>
+            <div class="column is-hidden-mobile"></div>
+
+            
+            <div class="column is-narrow">
+                <div class="columns is-mobile is-multiline is-centered">
+                
+                    
+                <a class="column is-narrow has-text-black" title="GitHub" href="https://github.com/round00" target="_blank" rel="noopener">
+                    
+                    GitHub
+                    
+                </a>
+                
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</footer>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment-with-locales.min.js"></script>
+
+<!-- test if the browser is outdated -->
+<div id="outdated">
+    <h6>Your browser is out-of-date!</h6>
+    <p>Update your browser to view this website correctly. <a id="btnUpdateBrowser" href="http://outdatedbrowser.com/" target="_blank" rel="noopener">Update my browser now </a></p>
+    <p class="last"><a href="#" id="btnCloseUpdateBrowser" title="Close">&times;</a></p>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/outdated-browser/1.1.5/outdatedbrowser.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // plugin function, place inside DOM ready function
+        outdatedBrowser({
+            bgColor: '#f25648',
+            color: '#ffffff',
+            lowerThan: 'flex'
+        })
+    });
+</script>
+
+<script>
+    window.FontAwesomeConfig = {
+        searchPseudoElements: true
+    }
+    moment.locale("en-AU");
+</script>
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            matchFontHeight: false
+        },
+        SVG: {
+            matchFontHeight: false
+        },
+        CommonHTML: {
+            matchFontHeight: false
+        },
+        tex2jax: {
+            inlineMath: [
+                ['$','$'],
+                ['\\(','\\)']
+            ]
+        }
+    });
+</script>
+
+    
+    
+    
+    
+<script src="//cdnjs.cloudflare.com/ajax/libs/lightgallery/1.6.8/js/lightgallery-all.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.5/js/jquery.justifiedGallery.min.js"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            if (typeof($.fn.lightGallery) === 'function') {
+                $('.article.gallery').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof($.fn.justifiedGallery) === 'function') {
+                $('.justified-gallery').justifiedGallery();
+            }
+        });
+    })(jQuery);
+</script>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        .hljs {
+            position: relative;
+        }
+
+        .hljs .clipboard-btn {
+            float: right;
+            color: #9a9a9a;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hljs .clipboard-btn:hover {
+          color: #8a8a8a;
+        }
+
+        .hljs > .clipboard-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+
+        .hljs:hover > .clipboard-btn {
+            display: inline;
+        }
+
+        .hljs > figcaption > .clipboard-btn {
+            margin-right: 4px;
+        }
+    </style>
+    <script>
+      $(document).ready(function () {
+        $('figure.hljs').each(function(i, figure) {
+          var codeId = 'code-' + i;
+          var code = figure.querySelector('.code');
+          var copyButton = $('<button>Copy <i class="far fa-clipboard"></i></button>');
+          code.id = codeId;
+          copyButton.addClass('clipboard-btn');
+          copyButton.attr('data-clipboard-target-id', codeId);
+
+          var figcaption = figure.querySelector('figcaption');
+
+          if (figcaption) {
+            figcaption.append(copyButton[0]);
+          } else {
+            figure.prepend(copyButton[0]);
+          }
+        })
+
+        var clipboard = new ClipboardJS('.clipboard-btn', {
+          target: function(trigger) {
+            return document.getElementById(trigger.getAttribute('data-clipboard-target-id'));
+          }
+        });
+        clipboard.on('success', function(e) {
+          e.clearSelection();
+        })
+      })
+    </script>
+
+    
+    
+
+    
+
+
+
+<script src="/js/script.js"></script>
+
+
+    
+    <div class="searchbox ins-search">
+    <div class="searchbox-mask"></div>
+    <div class="searchbox-container ins-search-container">
+        <div class="searchbox-input-wrapper">
+            <input type="text" class="searchbox-input ins-search-input" placeholder="Type something..." />
+            <span class="searchbox-close ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="searchbox-result-wrapper ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+    (function (window) {
+        var INSIGHT_CONFIG = {
+            TRANSLATION: {
+                POSTS: 'Posts',
+                PAGES: 'Pages',
+                CATEGORIES: 'Categories',
+                TAGS: 'Tags',
+                UNTITLED: '(Untitled)',
+            },
+            CONTENT_URL: '/content.json',
+        };
+        window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+    })(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+    
+</body>
+</html>
